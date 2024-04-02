@@ -29,7 +29,10 @@ resource "aws_instance" "blackboard_instance" {
 
 resource "aws_ec2_instance_state" "blackboard_instance" {
   instance_id = aws_instance.blackboard_instance.id
-  state       = "running" # "stopped" or "running"
+  
+  # After switching from stopped to running state, the public DNS of the instance will not be available immediately, and so the output will be incorrect. Run `terraform refresh` to update the output values when this happens.
+  state       = "stopped" # "stopped" or "running"
+
 }
 
 output "blackboard_public_dns" {
