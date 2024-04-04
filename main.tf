@@ -31,26 +31,26 @@ resource "aws_ec2_instance_state" "blackboard_instance" {
   instance_id = aws_instance.blackboard_instance.id
   
   # After switching from stopped to running state, the public DNS of the instance will not be available immediately, and so the output will be incorrect. Run `terraform refresh` to update the output values when this happens.
-  state       = "stopped" # "stopped" or "running"
+  state = "running" # "stopped" or "running"
 
 }
 
 output "blackboard_public_dns" {
   description = "The URL to access Blackboard from the browser"
-  value = "https://${aws_instance.blackboard_instance.public_dns}"
+  value = aws_ec2_instance_state.blackboard_instance.state == "running" ? "https://${aws_instance.blackboard_instance.public_dns}": null
 }
 
 output "blackboard_username" {
   description = "The username for logging into Blackboard from the browser"
-  value = "administrator"
+  value = aws_ec2_instance_state.blackboard_instance.state == "running" ? "administrator" : null
 }
 
 output "blackboard_password" {
   description = "The password for logging into Blackboard from the browser"
-  value = aws_instance.blackboard_instance.id
+  value = aws_ec2_instance_state.blackboard_instance.state == "running" ? aws_instance.blackboard_instance.id : null
 }
 
 output "ssh_command" {
   description = "The command to SSH into the Blackboard instance"
-  value = "ssh -i ~/.ssh/bblearn-aws ubuntu@${aws_instance.blackboard_instance.public_dns}"
+  value = aws_ec2_instance_state.blackboard_instance.state == "running" ? "ssh -i ~/.ssh/bblearn-aws ubuntu@${aws_instance.blackboard_instance.public_dns}" : null
 }
