@@ -1,0 +1,9 @@
+i=0
+
+while ! curl -m 2 -s -o /dev/null -w "%{http_code}" -k $(terraform output -raw blackboard_public_dns) | grep -q 200; do
+    let i++
+    echo "Checking $i..."
+    sleep 1
+done
+
+echo "Server up"
